@@ -1,0 +1,334 @@
+---
+title: "Stats 102A - Homework 2 - Output File"
+author: "Miles Chen (example)"
+format: pdf
+---
+
+Copyright Miles Chen, Do not post, share, or distribute without permission.
+
+To receive full credit the functions you write must pass all tests. We may conduct further tests that are not included on this page as well.
+
+# Academic Integrity Statement
+
+By including this statement, I, **Yuer Tang**, declare that all of the work in this assignment is my own original work.
+
+At no time did I use an AI tool to generate or debug my solutions.
+
+At no time did I look at the code of other students nor did I search for code solutions.
+
+I understand that forbidden AI usage or plagiarism on any single part of this assignment will result in a 0 for the entire assignment.
+
+```{r, error = TRUE}
+source("102a_hw_02_script_Yuer_Tang.R")  # edit with your file name
+```
+
+\pagebreak
+
+# Part 1: Board representation
+
+Create a single list object called `board` where you store the features of the game board in R.
+
+```{r, error = TRUE}
+board <- list(
+  n_row = 10,
+  n_col = 10,
+  ladders = data.frame(
+    start = c(1, 4, 9, 21, 28, 36, 51, 71, 80),
+    end   = c(38, 14, 31, 42, 84, 44, 67, 91, 100)
+  ),
+  chutes = data.frame(
+    start = c(16, 47, 49, 56, 62, 64, 87, 93, 95, 98),
+    end   = c(6, 26, 11, 53, 19, 60, 24, 73, 75, 78)
+  )
+)
+```
+
+\pagebreak
+
+# Part 2: Plot of Game board
+
+```{r, error = TRUE}
+# par() should help the plot be more visible. you can adjust this as necessary
+par(mar = c(0, 0, 0, 0)) 
+show_board(board)
+```
+
+\pagebreak
+
+# Part 3: Miniboards
+
+Create the `miniboard` objects and plots.
+
+```{r, error = TRUE}
+miniboard1 <- list( 
+  n_row = 7,
+  n_col = 6,
+  ladders = data.frame(
+    start = c(1,9,20,33),
+    end   = c(23,27,31,41)
+  ),
+  chutes = data.frame(
+    start = c(16,30,35,40),
+    end   = c(6,18,24,26)
+  ))
+par(mar = c(0, 0, 0, 0))
+show_board(miniboard1)
+```
+
+```{r, error = TRUE}
+miniboard2 <- list( 
+  n_row = 9,
+  n_col = 7,
+  ladders = data.frame(
+    start = c(9,13,24,29,33,43),
+    end   = c(22,30,37,41,39,54)
+  ),
+  chutes = data.frame(
+    start = c(16,31,35,62),
+    end   = c(3,15,21,48)
+  ))
+par(mar = c(0, 0, 0, 0))
+show_board(miniboard2)
+```
+
+```{r, error = TRUE}
+miniboard3 <- list( 
+  n_row = 9,
+  n_col = 8,
+  ladders = data.frame(
+    start = c(),
+    end   = c()
+  ),
+  chutes = data.frame(
+    start = c(),
+    end   = c()
+  ))
+par(mar = c(0, 0, 0, 0))
+show_board(miniboard3)
+```
+
+\pagebreak
+
+# Part 4: Verbose output of one single player game
+
+```{r, error = TRUE}
+set.seed(5)
+play_solo(board, verbose = TRUE)
+```
+
+\pagebreak
+
+# Part 5: Monte Carlo Simulation Study
+
+```{r, error = TRUE}
+# Run 10,000 simulations
+n_sims <- 10000
+# To record the 10,000 in one matrix, each row is 1 simulation and column would be pairs of chutes/ladders, since I define chutes and ladders as frame where row is pair and column is start and ends
+all_turns <- numeric(n_sims)
+all_chute_tallies <- matrix(0, nrow = n_sims, ncol = nrow(board$chutes))
+all_ladder_tallies <- matrix(0, nrow = n_sims, ncol = nrow(board$ladders))
+
+for (i in 1:n_sims) {
+  result <- play_solo(board, verbose = FALSE)
+  all_turns[i] <- result$turns
+  all_chute_tallies[i, ] <- result$chute_tally
+  all_ladder_tallies[i, ] <- result$ladder_tally
+}
+```
+
+-   Create a histogram (breaks = 50) of the turns.
+
+```{r}
+hist(all_turns, breaks = 50, 
+     main = "Distribution of Turns to Complete Game",
+     xlab = "Number of Turns",
+     col = "lightblue")
+
+```
+
+-   Find the minimum number of turns. How many times out of 10,000 did a game finish with the minimum number of turns?
+
+```{r}
+min_turns <- min(all_turns)
+min_turns
+
+# How many games finished with minimum turns?
+sum(all_turns == min_turns)
+```
+
+-   Find the maximum number of turns.
+
+```{r}
+max(all_turns)
+```
+
+-   What is the median number of turns?
+
+```{r}
+median(all_turns)
+```
+
+-   What is the mean number of turns?
+
+```{r}
+mean(all_turns)
+
+```
+
+-   What proportion of games take 100 or more turns to complete?
+
+```{r}
+sum(all_turns >= 100) / n_sims
+```
+
+-   What proportion of games take 10 or fewer turns to complete?
+
+```{r}
+sum(all_turns <= 10) /n_sims
+```
+
+-   What proportion of games utilize ladder 9 (the shortcut to win on space 80)?
+
+```{r}
+sum(all_ladder_tallies[, 9] > 0)/n_sims
+```
+
+-   Create a barplot of the relative frequency of how often each chute is utilized. (Number the chutes in order based on their starting square. The chute with lowest starting number, 16 to 6, is chute 1. The chute going from 98 to 78 is chute 10.)
+
+```{r}
+chute_totals <- colSums(all_chute_tallies)
+chute_relative_freq <- chute_totals / sum(chute_totals)
+
+barplot(chute_relative_freq,
+        names.arg = 1:10,
+        main = "Relative Frequency of Chute Usage",
+        xlab = "Chute Number",
+        ylab = "Relative Frequency",
+        col = "lightblue")
+```
+
+-   Create a barplot of the relative frequency of how often each ladder is utilized. (Number the ladders in order based on their starting square. The ladder with lowest starting number, 1 to 38, is ladder 1. The Ladder going from 80 to 100 is ladder 9.)
+
+```{r}
+ladder_totals <- colSums(all_ladder_tallies)
+ladder_relative_freq <- ladder_totals / sum(ladder_totals)
+barplot(ladder_relative_freq,
+        names.arg = 1:9,
+        main = "Relative Frequency of Ladder Usage",
+        xlab = "Ladder Number",
+        ylab = "Relative Frequency",
+        col = "lightblue")
+```
+
+# Optional Extra Credit
+
+1.  Make a function that input current positions and board and will give me the set of next possible positions
+2.  Then get move1 set, move2 set, and move3 set positions
+3.  Plot heatmap
+
+```{r}
+get_next_positions <- function(current_positions, board) {
+  
+  winning_number <- board$n_row * board$n_col
+  next_positions <- c()
+  
+  for (pawn in current_positions) {
+    # we want to know all possibilities, so use the for function at here
+    for (spin in 1:6) {
+      new_pawn <- pawn + spin
+      if (new_pawn > winning_number) {
+        new_pawn <- pawn
+      }
+      
+      ladder_idx <- which(board$ladders$start == new_pawn)
+      if (length(ladder_idx) > 0) {
+        new_pawn <- board$ladders$end[ladder_idx]
+      }
+      
+      chute_idx <- which(board$chutes$start == new_pawn)
+      if (length(chute_idx) > 0) {
+        new_pawn <- board$chutes$end[chute_idx]
+      }
+      
+      next_positions <- c(next_positions, new_pawn)
+    }
+  }
+  
+  return(next_positions)
+}
+```
+
+```{r}
+move_1 <- get_next_positions(c(0), board)
+cat("move1:",move_1, "\n") 
+
+move_2 <- get_next_positions(move_1, board)
+cat("move2:",move_2,"\n")  
+
+move_3 <- get_next_positions(move_2, board)
+cat("move3",move_3, "\n")  
+```
+
+```{r}
+plot_heatmap <- function(positions, board, title) {
+  
+  n_row <- board$n_row
+  n_col <- board$n_col
+  winning_number <- n_row * n_col
+  # Still, build the board
+  grid <- matrix(NA, nrow = n_row, ncol = n_col)
+  for (row in 1:n_row) {
+    if (row %% 2 == 1) {
+      start <- (row - 1) * n_col + 1
+      grid[row, ] <- start:(start + n_col - 1)
+    } else {
+      start <- row * n_col
+      grid[row, ] <- start:(start - n_col + 1)
+    }
+  }
+  # Logic is to records the vector of appearances for each move and turn it to frequence
+   counts <- rep(0, winning_number + 1)  
+    for (pos in positions) {
+      counts[pos + 1] <- counts[pos + 1] + 1
+    }
+    
+    frequencies <- counts / length(positions)
+  # Then put that frequency to the corresponding value on to a matrix 
+    prob_matrix <- matrix(0, nrow = n_row, ncol = n_col)
+    for (row in 1:n_row) {
+      for (col in 1:n_col) {
+        number <- grid[row, col]
+        prob_matrix[row, col] <- frequencies[number+ 1]
+      }
+    }
+    
+
+  plot.new()
+  plot.window(xlim = c(0, n_col), ylim = c(0, n_row), asp = 1)
+  title(main = title)
+  
+  for (row in 1:n_row) {
+    for (col in 1:n_col) {
+      prob <- prob_matrix[row, col]
+      
+      if (prob > 0) {
+
+        color <- rgb(1, 0, 0, alpha = prob / max(prob_matrix) * 0.8 + 0.1)
+      } else {
+        color <- "white"
+      }
+      
+      rect(col - 1, row - 1, col, row, col = color, border = "black")
+
+      text(col - 0.5, row - 0.5, labels = grid[row, col], cex = 0.7)
+    }
+  }
+}
+```
+
+```{r}
+par(mfrow = c(1, 3))
+plot_heatmap(move_1, board, "After 1 Roll")
+plot_heatmap(move_2, board, "After 2 Rolls")
+plot_heatmap(move_3, board, "After 3 Rolls")
+```

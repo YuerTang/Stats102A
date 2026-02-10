@@ -1,0 +1,276 @@
+---
+title: "Stats 102A - Homework 3 - Output File"
+author: "Miles Chen (example)"
+format: pdf
+---
+
+Copyright Miles Chen, Do not post, share, or distribute without permission.
+
+To receive full credit the functions you write must pass all tests. We may conduct further tests that are not included on this page as well.
+
+# Academic Integrity Statement
+
+By including this statement, I, Yuer Tang, declare that all of the work in this assignment is my own original work.
+
+At no time did I use an AI tool to generate or debug my solutions.
+
+At no time did I look at the code of other students nor did I search for code solutions.
+
+I understand that forbidden AI usage or plagiarism on any single part of this assignment will result in a 0 for the entire assignment.
+
+## Part 1. Basic dplyr exercises
+
+Install the package `fueleconomy` and load the dataset `vehicles`. Answer the following questions.
+
+```{r exc2data, error = TRUE, message = FALSE}
+library(fueleconomy) # run install.packages("fueleconomy") if necessary
+library(tidyverse)
+data(vehicles)
+```
+
+a.  How many unique vehicle makers (variable `make`) are included in the dataset?
+
+```{r}
+# write your code here, the output displayed should answer the question.
+vehicles |> summarize(n = n_distinct(make))
+```
+
+b.  How many vehicles made in 2014 are represented in the dataset?
+
+```{r}
+# write your code here, the output displayed should answer the question.
+vehicles |>
+  filter(year==2014) |>
+  count()
+```
+
+c1.  For the year 2014, what was the average city mpg (gas mileage) for all `Compact Cars`? What was the average city mpg for `Midsize Cars` in 2014?
+
+```{r}
+# write your code here, the output displayed should answer the question.
+vehicles |>
+  filter(year == 2014, class=="Compact Cars") |>
+  summarise(avg_city_mpg = mean(cty),na.rm = TRUE)
+
+```
+
+c2.  For the year 2014, compare makers of `Midsize Cars`. 
+```{r}
+vehicles |>
+  filter(year == 2014, class=="Midsize Cars") |>
+  summarise(avg_city_mpg = mean(cty),na.rm = TRUE) 
+
+```
+d. Find the average city mpg of midsize cars for each manufacturer. For example, in 2014, Acura has 5 midsize cars with an average city mpg of 20.6, while Audi has 12 midsize cars with an average city mpg of 19.08.
+Produce a table showing the city mpg for 2014 midsize cars for the 27 manufacturers represented in the table. Arrange the results in descending order, so that the manufacturer with the highest average mpg will be listed first.
+
+```{r}
+# write your code here, the output displayed should answer the question.
+
+vehicles |>
+  filter(year == 2014, class == "Midsize Cars")|>
+  group_by(make) |>
+  summarize(
+    avg_city_mpg_make = mean(cty,na.rm=TRUE))|>
+
+  arrange(desc(avg_city_mpg_make))|>
+  print(n = Inf, width = Inf)
+  
+  
+  
+```
+
+e.  Finally, for the years 1994, 1999, 2004, 2009, and 2014, find the average city mpg of `Midsize Cars` for each manufacturer for each year. Use tidyr to transform the resulting output so each manufacturer has one row, and five columns (a column for each year). Print out all the rows of the resulting tibble. You can use `print(tibble, n = 36)` to print 36 rows of a tibble.
+
+```{r}
+#             make     1994     1999     2004     2009     2014
+# 1          Acura       NA 16.50000 17.33333 17.00000 20.60000
+# 2           Audi       NA 15.25000 16.20000 15.83333 19.08333
+vehicles |>
+  filter(year %in% c(1994, 1999, 2004,2009, 2014), class == "Midsize Cars") |>
+  group_by(make,year) |>
+  summarise(avg_city_mpg = mean(cty, na.rm = TRUE),.groups = "drop")|>
+  pivot_wider(names_from = year, values_from = avg_city_mpg) |>
+  print(n=36)
+
+```
+
+## Part 2. More dplyr
+
+*Make sure your final output shows the desired average number of days between visits.*
+
+```{r dplyr_pt2}
+load("dr4.Rdata")
+
+# first create a gap table where each row is one customer and each column is the difference between visits
+gap_table <- dr4 |>
+  mutate(
+    gap12 = visit2 - visit1,
+    gap23 = visit3 - visit2,
+    gap34 = visit4 - visit3,
+    gap45 = visit5 - visit4
+  )
+
+
+# Then average out
+overall_avg <- gap_table |>
+  summarise(
+    avg_days_between_visits = mean(c(gap12, gap23, gap34, gap45), na.rm = TRUE)
+  )
+
+print(overall_avg)
+
+
+```
+
+## Part 3. Scrape baseball-reference.com with rvest
+
+```{r baseball_rvest, error = TRUE, message = FALSE}
+library(rvest)
+library(polite)
+
+# Open a polite session.
+session <- bow("http://www.baseball-reference.com/teams/",
+  user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
+  force = TRUE
+) 
+
+# Scrape the content of the page and store it in an object teampage.
+# There's no need to open another session.
+teampage <- session |> 
+  scrape(content = "text/html; charset=UTF-8")
+
+# Now that the page content has been scraped, you do not need to request it 
+# again. Use the object teampage and html_nodes() to extract the desired nodes,
+# for example, you'll want to extract the team names among other values.
+team_nodes <- teampage |>
+  html_nodes("#teams_active .left a")
+
+team_names <- html_text(team_nodes, trim = TRUE)
+team_paths <- html_attr(team_nodes, "href")
+
+team_df <- tibble(
+  team_name = team_names,
+  team_path = team_paths
+)
+
+
+# Write a loop to visit each of the active franchise team pages.
+# To change what page you are visiting, use nod("url of updated location")
+
+baseball_list <- vector("list", nrow(team_df)) 
+
+for (i in seq_len(nrow(team_df))) {
+
+  team_name <- team_df$team_name[i]
+  team_path <- team_df$team_path[i]
+
+  team_html <- scrape(nod(session, path = team_path))
+  tbl_node <- team_html |> html_node("#franchise_years")
+
+  if (is.na(tbl_node) || length(tbl_node) == 0) {
+    baseball_list[[i]] <- NULL
+    next
+  }
+
+  df <- tbl_node |> html_table(fill = TRUE) |> mutate(across(everything(), as.character))
+  df$current_name <- team_name
+  baseball_list[[i]] <- df
+
+  Sys.sleep(1)
+}
+
+# Combine all the data into a single tibble called baseball that contains all 
+# of the teams' franchise histories
+baseball <- bind_rows(baseball_list)
+
+# at the end, be sure to print out the dimensions of your baseball table
+dim(baseball)
+
+# Print the first 10 rows of the tibble. Do not use head, as that will truncate 
+# the table.
+print(baseball, n = 10, width = Inf)
+```
+
+**Some light text clean up**
+
+```{r baseball_cleanup, error = TRUE, echo = FALSE}
+# you should not need to modify this code, but you will need to run it.
+library(stringr)
+# This code checks to see if text in table has a regular space character.
+# The text from the website uses a non-breaking space, so we expect there to be 
+# a mismatch. I convert to raw because when displayed on screen, we cannot see 
+# the difference between a regular breaking space and a non-breaking space.
+all.equal(charToRaw(baseball$Tm[1]), charToRaw("Arizona Diamondbacks"))
+
+# Identify which columns are character columns
+char_cols <- which(lapply(baseball, typeof) == "character")
+
+# This loop: for each character column, convert to UTF-8
+# then replace the non-breaking space with a regular space.
+for(i in char_cols) {
+    baseball[[i]] <- str_conv(baseball[[i]], "UTF-8")
+    baseball[[i]] <- str_replace_all(baseball[[i]],"\\s"," ")
+}
+
+# We check to see if the conversion worked.
+# The following statement checks to see if the characters of the first team
+# name is "Arizona Diamondbacks" with a regular space (vs non-breaking space).
+# If the following statement returns TRUE, then it worked.
+all.equal(charToRaw(baseball$Tm[1]), charToRaw("Arizona Diamondbacks"))
+```
+
+## Part 4. dplyr to summarize the baseball data
+
+```{r baseball_dplyr}
+baseball_summary <- baseball |>
+  filter(Year >= 2001, Year <=2025) |>
+  mutate(
+    W = as.numeric(W),
+    L = as.numeric(L),
+    R = as.numeric(R),
+    RA = as.numeric(RA)
+  )|>
+  group_by(current_name) |>
+  summarise(TW = sum(W, na.rm = TRUE),
+            TL= sum(L, na.rm = TRUE),
+            TR = sum(R, na.rm = TRUE),
+            TRA = sum (RA, na.rm = TRUE),
+            win_percent = TW/ (TW+TL),
+             .groups = "drop")|>
+  arrange(desc(win_percent))
+
+print(baseball_summary, n = 30,  width = Inf)
+
+
+```
+
+## 5. Regular expressions to extract values in the Managers Column
+
+```{r baseball_regex}
+pattern <- "([A-Z]\\.[a-zA-ZÀ-ÿ' ]+) \\(([0-9]+)-([0-9]+)\\)"
+manager_matches <- str_match_all(baseball$Managers, pattern)
+manager_matrix <- do.call(rbind, manager_matches)
+manager_df <- tibble(
+  manager = manager_matrix[, 2],   
+  wins    = as.numeric(manager_matrix[, 3]),  
+  losses  = as.numeric(manager_matrix[, 4])    
+)
+
+manager_summary <- manager_df |>
+  group_by(manager) |>
+
+  summarize(
+    games   = sum(wins + losses),
+    wins    = sum(wins),
+    losses  = sum(losses),
+    win_pct = wins / games,
+    .groups = "drop"
+  ) |>
+  arrange(desc(games))
+
+print(manager_summary, n = 15, width = Inf)
+```
+
+
+
