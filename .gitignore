@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+
+# LaTeX auxiliary files
+*.aux
+*.log
+*.out
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+*.toc
+
+# RStudio project files
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
