@@ -1,5 +1,5 @@
-\documentclass[10pt]{article}
-\usepackage[margin=0.13in]{geometry}
+\documentclass[10pt,a4paper]{article}
+\usepackage[a4paper,margin=0.12in]{geometry}
 \usepackage{multicol}
 \usepackage{xcolor}
 \usepackage{enumitem}
@@ -7,9 +7,9 @@
 \usepackage{array}
 \usepackage{colortbl}
 \usepackage{tabularx}
+\usepackage{graphicx}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
-
 \pagestyle{empty}
 
 % ── COLORS ──────────────────────────────────────
@@ -24,42 +24,44 @@
 
 % ── SECTION HEADER ──
 \newcommand{\sect}[2]{%
-  \vspace{3.5pt}%
-  {\noindent\fontsize{5.5}{6.3}\selectfont\sffamily\bfseries\textcolor{#1}{\rule{1.5pt}{5.5pt}\;\,#2}\par\nobreak}%
-  \vspace{-1pt}\noindent{\color{#1}\rule{\columnwidth}{0.5pt}}\vspace{1.5pt}\par\nobreak%
+  \vspace{5pt}%
+  {\noindent\fontsize{8}{9.2}\selectfont\sffamily\bfseries\textcolor{#1}{\rule{2pt}{8pt}\;\,#2}\par\nobreak}%
+  \vspace{-1pt}\noindent{\color{#1}\rule{\columnwidth}{0.5pt}}\vspace{2pt}\par\nobreak%
 }
 
 % ── SUB-HEADER ──
 \newcommand{\sub}[1]{%
-  \vspace{1.5pt}{\noindent\fontsize{4.2}{5.0}\selectfont\sffamily\bfseries #1}\vspace{0.5pt}\par\nobreak%
+  \vspace{2.5pt}{\noindent\fontsize{6}{7}\selectfont\sffamily\bfseries #1}\vspace{1pt}\par\nobreak%
 }
 
 % ── CODE (monospace) ──
-\newcommand{\cd}[1]{{\fontsize{3.8}{4.5}\selectfont\texttt{#1}}}
+\newcommand{\cd}[1]{{\fontsize{5.5}{6.5}\selectfont\texttt{#1}}}
 
 % ── Arrows and markers ──
-\newcommand{\ra}{\,{\fontsize{3.3}{3.3}\selectfont$\boldsymbol{\rightarrow}$}\,}
-\newcommand{\W}{\textcolor{cred}{\fontsize{4.1}{4.1}\selectfont$\blacktriangleright$}\,}
+\newcommand{\ra}{\,{\fontsize{4.8}{4.8}\selectfont$\boldsymbol{\rightarrow}$}\,}
+\newcommand{\W}{\textcolor{cred}{\fontsize{5.8}{5.8}\selectfont$\blacktriangleright$}\,}
 
 % ── Tight itemize ──
-\setlist[itemize]{leftmargin=5pt, itemsep=0pt, parsep=0pt, topsep=0.5pt, partopsep=0pt, label={\tiny$\bullet$}}
+\setlist[itemize]{leftmargin=7pt, itemsep=0pt, parsep=0pt, topsep=0.5pt, partopsep=0pt, label={\scriptsize$\bullet$}}
 
 % ── Table defaults ──
-\setlength{\tabcolsep}{2pt}
-\renewcommand{\arraystretch}{1.0}
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.1}
 
 \begin{document}
 
 % ═══════════════════════════════════════════════════
-%  PAGE 1
+%  PAGE 1 — DATA FUNDAMENTALS
 % ═══════════════════════════════════════════════════
 
-\fontsize{4.2}{5.2}\selectfont
+\fontsize{6}{7.2}\selectfont
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.3pt}
-\setlength{\columnsep}{4pt}
+\setlength{\columnsep}{5pt}
 \setlength{\columnseprule}{0.15pt}
 \def\columnseprulecolor{\color{rulecolor}}
+
+\hfill{\fontsize{6}{7}\selectfont\textbf{Yuer Tang} \enspace 005959967}\par\vspace{1pt}
 
 \begin{multicols}{3}
 
@@ -126,7 +128,7 @@ Levels sorted \textbf{alphabetically}: \cd{factor(c("M","F","F"))}\ra levels \cd
 \cd{unlist(list(1,c(2,3)))}\ra \cd{c(1,2,3)}.
 
 % ─────────────────────────────────────────────────
-\sect{cblue}{COERCION RULES}
+\sect{cblue}{COERCION \& SPECIAL VALUES}
 % ─────────────────────────────────────────────────
 
 \sub{Combining different types with c()}
@@ -163,10 +165,7 @@ Data frame: each column can be different type (list of columns).\\
 \cd{cbind()} on mixed types\ra coerces to most general (matrix).\\
 \cd{data.frame(x=1:3, y=c("a","b","c"))}\ra preserves types.
 
-% ─────────────────────────────────────────────────
-\sect{cblue}{SPECIAL VALUES: NA, NULL, NaN, Inf}
-% ─────────────────────────────────────────────────
-
+\sub{Special values: NA, NULL, NaN, Inf}
 \begin{tabular}{@{}l|p{4.2em}|p{4.2em}|p{3.5em}|p{3.2em}@{}}
 \rowcolor{cbg} & \textbf{NA} & \textbf{NULL} & \textbf{NaN} & \textbf{Inf}\\
 \textbf{Meaning} & Missing & Empty & 0/0 & $\infty$\\
@@ -183,7 +182,10 @@ Data frame: each column can be different type (list of columns).\\
 NA in math: \cd{NA + 1}\ra \cd{NA}. \cd{NA * 0}\ra \cd{NA} (not 0!).\\
 \cd{NA \& FALSE}\ra \cd{FALSE}. \cd{NA | TRUE}\ra \cd{TRUE}. (determined!)\\
 Typed: \cd{NA\_integer\_}, \cd{NA\_real\_}, \cd{NA\_character\_}, \cd{NA\_complex\_}.\\
-NA in vector does NOT change vector's type.
+NA in vector does NOT change vector's type.\\
+\cd{complete.cases(df)}\ra logical, rows with no NA.\\
+\cd{na.omit(df)}\ra remove rows with any NA.\\
+\cd{is.na(x) <- 3}\ra sets \cd{x[3]} to NA.
 
 \sub{NULL --- Empty / Nonexistent}
 \cd{c(4,5,NULL,3)}\ra \cd{c(4,5,3)} (NULL silently dropped!).\\
@@ -199,7 +201,7 @@ Remove list elements: \cd{l\$x <- NULL}. Default arg: \cd{f(x=NULL)}.
 \cd{NaN > 1}\ra \cd{NA}. \cd{Inf > 1e308}\ra \cd{TRUE}.
 
 % ─────────────────────────────────────────────────
-\sect{cblue}{VECTOR ARITHMETIC \& OPERATIONS}
+\sect{cblue}{OPERATORS, RECYCLING \& PRECEDENCE}
 % ─────────────────────────────────────────────────
 
 \sub{Element-wise operators (all recycle)}
@@ -224,10 +226,7 @@ Cumulative: \cd{cumsum()}, \cd{cumprod()}, \cd{cummax()}, \cd{cummin()}.
 \cd{\%in\%}: logical, vectorized on LEFT only.\\
 \cd{c(1,2,3) \%in\% c(2,4)}\ra \cd{c(F,T,F)}.
 
-% ─────────────────────────────────────────────────
-\sect{cblue}{VECTOR RECYCLING}
-% ─────────────────────────────────────────────────
-
+\sub{Recycling}
 Shorter vector \textbf{repeated} to match longer.\\
 \W Warning only if longer length NOT multiple of shorter.\\
 \cd{c(1,2,3)+c(100,200,300,400,500,600)}\ra \cd{c(101,202,303,401,502,603)} (no warn)\\
@@ -238,20 +237,47 @@ Row-wise trick: \cd{t(t(M) + x)}.\\
 Logical recycling: \cd{c(T,F)} recycles for every-other selection.\\
 \cd{cbind}/\cd{rbind} recycle shorter to match longer.
 
+\sub{Logical operators}
+\begin{tabular}{@{}l|l|l@{}}
+\rowcolor{cbg}\textbf{Vectorized} & \textbf{Non-vectorized} & \textbf{Use in}\\
+\cd{|} (OR), \cd{\&} (AND) & \cd{||}, \cd{\&\&} & \cd{if()} only\\
+Returns \textbf{vector} & Returns \textbf{single} value & Length-1 req'd\\
+\end{tabular}
+
+\vspace{1pt}
+\cd{||}/\cd{\&\&}: length$>$1\ra \textbf{ERROR} (R$\ge$4.3).\\
+\cd{==, !=, <, >, <=, >=} (vectorized, recycling).
+
+\sub{Short-circuit evaluation}
+\cd{FALSE \&\& y}\ra \cd{FALSE} (y not evaluated).
+\cd{TRUE || y}\ra \cd{TRUE} (y not evaluated).\\
+\cd{FALSE || y}\ra evaluates y\ra error if length$>$1.
+\cd{TRUE \&\& y}\ra same.
+
+\sub{NA logic}
+\begin{tabular}{@{}l|l|l@{}}
+\rowcolor{cbg} & \cd{TRUE} & \cd{FALSE}\\
+\cd{\_\_ | NA} & \cd{TRUE} & \cd{NA}\\
+\rowcolor{cbg!40}\cd{\_\_ \& NA} & \cd{NA} & \cd{FALSE}\\
+\end{tabular}
+
+Rule: if result determined without NA, R returns it.\\
+\cd{xor(T,T)}\ra\cd{F}. \cd{xor(T,F)}\ra\cd{T}. \cd{!NA}\ra\cd{NA}.\\
+\cd{any(logical(0))}\ra\cd{FALSE}. \cd{all(logical(0))}\ra\cd{TRUE}.\\
+\cd{"10" < "2"}\ra\cd{TRUE} (alphabetical!). \cd{"a" < "A"}\ra\cd{TRUE}.
+
+\sub{Operator precedence (high to low)}
+\cd{\^{}} $>$ unary \cd{-/+} $>$ \cd{\%\%/\%/\%*\%/\%in\%} $>$ \cd{*/\!/} $>$ \cd{+/-} $>$ \cd{< > <= >= == !=} $>$ \cd{!} $>$ \cd{\&/\&\&} $>$ \cd{|/||} $>$ \cd{\~{}} $>$ \cd{-> ->>} $>$ \cd{<- <<-}\\
+\W \cd{!x == y} means \cd{(!x) == y}, not \cd{!(x==y)}.\\
+\cd{-2\^{}2}\ra \cd{-4} (power before negation!). \cd{(-2)\^{}2}\ra \cd{4}.\\
+\cd{1:5 + 1}\ra \cd{c(2,3,4,5,6)} (\cd{:} binds tighter than \cd{+}).\\
+\cd{1:(5+1)}\ra \cd{c(1,2,3,4,5,6)}.
+
 % ─────────────────────────────────────────────────
-\sect{cblue}{ASSIGNMENT OPERATORS}
+\sect{cblue}{SUBSETTING}
 % ─────────────────────────────────────────────────
 
-\cd{<-}\ra standard (preferred). \cd{=}\ra only inside current scope.\\
-\cd{->}\ra right assignment (rare). \cd{<<-}\ra super assignment (parent env).\\
-\W \cd{f(x = 3)} passes arg. \cd{f(x <- 3)} assigns AND passes!\\
-\cd{mean(x = 1:5)}\ra x NOT in global. \cd{mean(x <- 1:5)}\ra x IS in global.
-
-% ─────────────────────────────────────────────────
-\sect{cgreen}{SUBSETTING ATOMIC VECTORS}
-% ─────────────────────────────────────────────────
-
-\sub{4 methods}
+\sub{Atomic vectors --- 4 methods}
 \textbf{1. Positive int:} \cd{x[c(3,1)]}\ra 3rd, 1st. Dupes OK: \cd{x[c(1,1)]}.\\
 \W Reals \textbf{truncated}: \cd{x[2.9]}\ra same as \cd{x[2]}.\\
 \textbf{2. Negative int:} \cd{x[-c(1,3)]}\ra all except 1st, 3rd.\\
@@ -266,10 +292,7 @@ Lookup tables: \cd{lookup[x]} to translate abbreviations.
 \cd{x[]}\ra original. \cd{x[0]}\ra zero-length vec.\\
 OOB: \cd{x[5]} on length-3\ra \cd{NA}. \cd{x[[5]]}\ra \textbf{ERROR}.
 
-% ─────────────────────────────────────────────────
-\sect{cgreen}{SUBSETTING LISTS: \texttt{[} vs \texttt{[[} vs \$}
-% ─────────────────────────────────────────────────
-
+\sub{Lists: \texttt{[} vs \texttt{[[} vs \$}
 \begin{tabular}{@{}l|p{5.5em}|p{5.8em}@{}}
 \rowcolor{cbg} & \cd{x[1]} & \cd{x[[1]]} / \cd{x\$a}\\
 \textbf{Returns} & \textbf{List} (train car) & \textbf{Contents} (inside)\\
@@ -283,15 +306,8 @@ OOB: \cd{x[5]} on length-3\ra \cd{NA}. \cd{x[[5]]}\ra \textbf{ERROR}.
 OOB: \cd{l[4]}\ra list w/ \cd{NULL}. \cd{l[[4]]}\ra \textbf{ERROR}.\\
 \cd{l[NULL]}\ra empty list. \cd{l[[NULL]]}\ra \textbf{ERROR}.\\
 \cd{\$} does \textbf{partial matching}: \cd{l\$na} may match \cd{l\$name} silently!\\
-\cd{[[} does NOT partial match: \cd{l[["na"]]}\ra \cd{NULL}.
-
-\sub{On atomic vectors}
-\cd{x[1]}\ra keeps names. \cd{x[[1]]}\ra drops names.\\
-\cd{x[5]} (OOB)\ra \cd{NA}. \cd{x[[5]]} (OOB)\ra \textbf{ERROR}.
-
-% ─────────────────────────────────────────────────
-\sect{cgreen}{SUBSETTING MATRICES \& DATA FRAMES}
-% ─────────────────────────────────────────────────
+\cd{[[} does NOT partial match: \cd{l[["na"]]}\ra \cd{NULL}.\\
+On atomic: \cd{x[1]}\ra keeps names. \cd{x[[1]]}\ra drops names.
 
 \sub{Matrices}
 \cd{a[1:2,]}\ra rows 1--2. \cd{a[,c("B","A")]}\ra cols B, A.\\
@@ -326,44 +342,9 @@ Factor & \cd{x[1]} (all lvls) & \cd{x[1,drop=T]}\\
 Data frame & \cd{df["x"]} (df) & \cd{df[,"x"]} (vector)\\
 \end{tabular}
 
-% ─────────────────────────────────────────────────
-\sect{cgreen}{LOGICAL OPERATORS}
-% ─────────────────────────────────────────────────
-
-\sub{Vectorized vs Non-vectorized}
-\begin{tabular}{@{}l|l|l@{}}
-\rowcolor{cbg}\textbf{Vectorized} & \textbf{Non-vectorized} & \textbf{Use in}\\
-\cd{|} (OR), \cd{\&} (AND) & \cd{||}, \cd{\&\&} & \cd{if()} only\\
-Returns \textbf{vector} & Returns \textbf{single} value & Length-1 req'd\\
-\end{tabular}
-
-\vspace{1pt}
-\cd{||}/\cd{\&\&}: length$>$1\ra \textbf{ERROR} (R$\ge$4.3).
-
-\sub{Short-circuit evaluation}
-\cd{FALSE \&\& y}\ra \cd{FALSE} (y not evaluated).
-\cd{TRUE || y}\ra \cd{TRUE} (y not evaluated).\\
-\cd{FALSE || y}\ra evaluates y\ra error if length$>$1.
-\cd{TRUE \&\& y}\ra same.
-
-\sub{NA logic}
-\begin{tabular}{@{}l|l|l@{}}
-\rowcolor{cbg} & \cd{TRUE} & \cd{FALSE}\\
-\cd{\_\_ | NA} & \cd{TRUE} & \cd{NA}\\
-\rowcolor{cbg!40}\cd{\_\_ \& NA} & \cd{NA} & \cd{FALSE}\\
-\end{tabular}
-
-Rule: if result determined without NA, R returns it.\\
-\cd{xor(T,T)}\ra\cd{F}. \cd{xor(T,F)}\ra\cd{T}. \cd{!NA}\ra\cd{NA}.\\
-\cd{any(logical(0))}\ra\cd{FALSE}. \cd{all(logical(0))}\ra\cd{TRUE}.\\
-\cd{"10" < "2"}\ra\cd{TRUE} (alphabetical!). \cd{"a" < "A"}\ra\cd{TRUE}.
-
-\sub{Comparison operators}
-\cd{==, !=, <, >, <=, >=} (vectorized, recycling).\\
-\cd{\%in\%}: left-vectorized. \cd{c(1,2) \%in\% c(2,3)}\ra\cd{c(F,T)}.\\
-\cd{is.\_\_\_()}: \cd{is.na}, \cd{is.null}, \cd{is.numeric}, \cd{is.character}, \cd{is.logical},
-\cd{is.integer}, \cd{is.double}, \cd{is.list}, \cd{is.data.frame}, \cd{is.factor},
-\cd{is.function}, \cd{is.matrix}, \cd{is.array}, \cd{is.atomic}.
+% ═══════════════════════════════════════════════════
+%  PAGE 2 — PROGRAMMING
+% ═══════════════════════════════════════════════════
 
 % ─────────────────────────────────────────────────
 \sect{cgreen}{CONTROL FLOW}
@@ -397,48 +378,9 @@ Use \cd{any()}/\cd{all()} to reduce vector to single logical for \cd{if()}.
 \W \cd{1:length(l)} when empty\ra \cd{c(1,0)} (loops twice!).\\
 Fix: \cd{seq\_along(l)} or \cd{seq\_len(n)}\ra \cd{integer(0)} when empty.
 
-\sub{Vectorization}
-\cd{rowSums(x)/ncol(x)} much faster than loop + \cd{mean()}.\\
-\cd{apply(x,1,mean)} slower than \cd{rowSums} approach.\\
-\cd{colSums()}, \cd{colMeans()}, \cd{rowMeans()}\ra fast built-ins.\\
-Vectorized ops avoid explicit loops and are 10--100x faster.
-
-\sub{Operator precedence (high to low)}
-\cd{\^{}} $>$ unary \cd{-/+} $>$ \cd{\%\%/\%/\%*\%/\%in\%} $>$ \cd{*/\!/} $>$ \cd{+/-} $>$ \cd{< > <= >= == !=} $>$ \cd{!} $>$ \cd{\&/\&\&} $>$ \cd{|/||} $>$ \cd{\~{}} $>$ \cd{-> ->>} $>$ \cd{<- <<-}\\
-\W \cd{!x == y} means \cd{(!x) == y}, not \cd{!(x==y)}.\\
-\cd{-2\^{}2}\ra \cd{-4} (power before negation!). \cd{(-2)\^{}2}\ra \cd{4}.\\
-\cd{1:5 + 1}\ra \cd{c(2,3,4,5,6)} (\cd{:} binds tighter than \cd{+}).\\
-\cd{1:(5+1)}\ra \cd{c(1,2,3,4,5,6)}.
-
-\end{multicols}
-
-% ═══════════════════════════════════════════════════
-%  PAGE 2
-% ═══════════════════════════════════════════════════
-
-\newpage
-
-\begin{multicols}{3}
 
 % ─────────────────────────────────────────────────
-\sect{cgreen}{FUNCTIONS}
-% ─────────────────────────────────────────────────
-
-\cd{name <- function(arg1, arg2=default) \{ body \}}\\
-\cd{typeof(f)}\ra\cd{"closure"}. \cd{mode(f)}\ra\cd{"function"}.\\
-\textbf{Implicit return:} last expression. \textbf{Explicit:} \cd{return()}.\\
-Return multiple: \cd{list()}. One line: \cd{f <- function(x) x*x}.\\
-\textbf{Arg matching:} 1) exact name, 2) positional.\\
-\cd{f(y=2, 1, 3)}\ra y=2, then 1\ra x, 3\ra z (positional fill).\\
-Missing used arg\ra ``arg missing, no default''. Extra\ra ``unused arg''.\\
-Unused arg in body\ra \textbf{no error} (lazy evaluation).\\
-\textbf{Scoping:} vars inside function are \textbf{local}. Must assign: \cd{x <- f(x)}.\\
-\cd{rm(list=ls())} inside function only removes \textbf{local} objects.\\
-\cd{...} (dots): passes extra args to inner functions.\\
-\cd{f <- function(x, ...) plot(x, ...)}\ra forwards to \cd{plot()}.
-
-% ─────────────────────────────────────────────────
-\sect{cgreen}{USEFUL BASE R FUNCTIONS}
+\sect{cgreen}{BASE R FUNCTIONS}
 % ─────────────────────────────────────────────────
 
 \sub{Searching \& matching}
@@ -463,144 +405,182 @@ Unused arg in body\ra \textbf{no error} (lazy evaluation).\\
 \cd{unique(x)}\ra unique values. \cd{duplicated(x)}\ra logical.\\
 \cd{nrow()}, \cd{ncol()}, \cd{dim()}, \cd{str()}, \cd{summary()}, \cd{head()}, \cd{tail()}.
 
-\sub{Apply family}
-\cd{lapply(x, f)}\ra always returns \textbf{list}.\\
-\cd{sapply(x, f)}\ra tries to simplify to vector/matrix.\\
-\cd{vapply(x, f, FUN.VALUE)}\ra like sapply with type safety.\\
-\cd{apply(M, 1, f)}\ra rows. \cd{apply(M, 2, f)}\ra cols.\\
-\cd{tapply(x, group, f)}\ra by group. \cd{mapply(f, x, y)}\ra parallel.\\
-\cd{do.call(f, list(a,b))}\ra same as \cd{f(a,b)}.\\
-\W \cd{sapply} returns list OR vector (unpredictable). Use \cd{vapply}.
 
-\sub{Missing data}
-\cd{complete.cases(df)}\ra logical, rows with no NA.\\
-\cd{na.omit(df)}\ra remove rows with any NA.\\
-\cd{is.na(x) <- 3}\ra sets \cd{x[3]} to NA.
+
+% ═══════════════════════════════════════════════════
+%  PAGE 3 — OOP \& TIDYVERSE
+% ═══════════════════════════════════════════════════
 
 % ─────────────────────────────────────────────────
-\sect{cteal}{ENVIRONMENTS \& SCOPING}
+\sect{cred}{S3 OOP}
 % ─────────────────────────────────────────────────
 
-\textbf{Environment:} bag of name\ra value bindings. \textbf{Not ordered}.\\
-\cd{e[[1]]}\ra ERROR. \cd{[} doesn't work (only \cd{[[} and \cd{\$}).\\
-\cd{e\$d <- NULL} does NOT remove d. Use \cd{rm(d, envir=e)}.\\
-\textbf{Copy-on-modify:} \cd{y<-x}; modify y copies, x unchanged.\\
-\textbf{Name binding:} \cd{y<-x} binds to \textbf{same} object until modified.
+\sub{Setup --- one example for everything}
+\cd{f <- function(x) UseMethod("f")}\quad\textit{generic (must have UseMethod)}\\
+\cd{f.j <- function(x) x+2}\quad\textit{method for class ``j''}\\
+\cd{f.k <- function(x) x+10}\quad\textit{method for class ``k''}\\
+\cd{f.default <- function(x) x+100}\quad\textit{fallback if no match}
 
-\sub{4 special environments}
-\cd{globalenv()}: user workspace. \cd{baseenv()}: base package.\\
-\cd{emptyenv()}: ultimate ancestor (\textbf{no parent}).\\
-\cd{search()}\ra search path. \cd{library()} inserts package.
+\sub{How dispatch works: f(obj) traces}
+\cd{f(obj)}\ra R reads \cd{class(obj)}, tries \cd{f.class1}, \cd{f.class2}, ..., \cd{f.default}, else ERROR.
 
-\sub{Lexical scoping (KEY RULE)}
-R looks where function was \textbf{DEFINED} (enclosing env),\\
-\textbf{NOT} where it was \textbf{CALLED} (calling env).
+\vspace{2pt}
+\cd{k <- 1}\quad\textit{no class attr, k is a plain double}\\
+\cd{f(k)}\ra try \cd{f.double}? \textbf{No}\ra \cd{f.numeric}? \textbf{No}\ra \cd{f.default}\ra $1+100=$ \cd{101}
 
-\sub{4 function environments}
-\begin{tabular}{@{}l|l@{}}
-\rowcolor{cbg}\textbf{Type} & \textbf{What}\\
-Enclosing & Where function was \textbf{created}\\
-\rowcolor{cbg!40}Binding & Where function's \textbf{name} exists\\
-Execution & \textbf{Temporary}, created per call\\
-\rowcolor{cbg!40}Calling & Where function was \textbf{called from}\\
+\vspace{2pt}
+\cd{class(k) <- "j"}\quad\textit{now k has class ``j''}\\
+\cd{f(k)}\ra try \cd{f.j}? \textbf{Yes}\ra $1+2=$ \cd{3}
+
+\vspace{2pt}
+\cd{f(structure(10, class=c("k","l")))}\quad\textit{class vector: try left to right}\\
+\ra try \cd{f.k}? \textbf{Yes} (first match)\ra $10+10=$ \cd{20}
+
+\vspace{2pt}
+\cd{f(structure(10, class=c("m","n")))}\quad\textit{no f.m or f.n}\\
+\ra \cd{f.m}? No\ra \cd{f.n}? No\ra \cd{f.default}\ra $10+100=$ \cd{110}
+
+\sub{Implicit classes (no class attr set)}
+\cd{7} is double\ra dispatch tries: \cd{f.double}\ra \cd{f.numeric}\ra \cd{f.default}\\
+\cd{7L} is integer\ra dispatch tries: \cd{f.integer}\ra \cd{f.numeric}\ra \cd{f.default}\\
+\cd{f.integer <- function(x) 100*x}\\
+\cd{f(7)}\ra \cd{107} (double path). \cd{f(7L)}\ra \cd{700} (integer path).
+
+\sub{Traps (using same example)}
+\W \cd{f.j(7)}\ra \cd{9}: direct call \textbf{skips dispatch}, just runs $7+2$!\\
+\W \cd{f <- function(x) UseMethod("g")}\ra dispatches \cd{g.class} not \cd{f.class}!\\
+\W Generic without \cd{UseMethod()}\ra methods \textbf{never} called.\\
+\W No matching method + no \cd{.default}\ra \textbf{ERROR}.
+
+\sub{Creating S3 objects}
+\cd{obj <- structure(list(name="apple"), class="fruit")}\\
+Or: \cd{obj <- list(...); class(obj) <- "fruit"}\\
+Inheritance: \cd{class(obj) <- c("apple","fruit")} (tries left to right).\\
+\W Use \cd{inherits(obj,"fruit")}, NOT \cd{class(obj)=="fruit"}.
+
+% ─────────────────────────────────────────────────
+\sect{cred}{R6 OOP}
+% ─────────────────────────────────────────────────
+
+\textbf{Encapsulated OOP}: methods belong to \textbf{objects}. \cd{library(R6)}.
+
+\sub{Example: Clock class}
+\cd{Clock <- R6Class("Clock", public = list(}\\
+\cd{\ \ hour=0, minute=0, second=0,}\\
+\cd{\ \ add\_hour = function(x) \{}\\
+\cd{\ \ \ \ self\$hour <- (self\$hour + 1)\%\%24}\\
+\cd{\ \ \ \ invisible(self) \},}\\
+\cd{\ \ add\_minute = function(x) \{}\\
+\cd{\ \ \ \ self\$minute <- (self\$minute + 1)\%\%60}\\
+\cd{\ \ \ \ invisible(self) \},}\\
+\cd{\ \ add\_second = function(x) \{}\\
+\cd{\ \ \ \ self\$second <- (self\$second + 1)\%\%60}\\
+\cd{\ \ \ \ invisible(self) \},}\\
+\cd{\ \ print = function(...) \{}\\
+\cd{\ \ \ \ cat("Hour:", self\$hour, "\textbackslash n")}\\
+\cd{\ \ \ \ cat("Minute:", self\$minute, "\textbackslash n")}\\
+\cd{\ \ \ \ cat("Second:", self\$second, "\textbackslash n")}\\
+\cd{\ \ \ \ invisible(self) \}))}
+
+\sub{Usage: new(), chaining, \$set()}
+\cd{clock1 <- Clock\$new()}\\
+\cd{clock1\$add\_hour()\$add\_hour()\$add\_second()}\\
+\cd{clock1}\quad\ra\quad \cd{Hour: 2 / Minute: 0 / Second: 1}\\[1pt]
+\cd{Clock\$set("public", "clock\_type", "analog")}\\
+\cd{clock1}\quad\ra\quad still \cd{Hour: 2 / Minute: 0 / Second: 1}\\
+\W \cd{\$set()} only affects \textbf{new} objects, not existing ones!
+
+\sub{Key concepts}
+\cd{self\$}\ra access own fields/methods. \cd{invisible(self)}\ra chaining.\\
+\cd{\$initialize()}\ra overrides \cd{\$new()}. \cd{\$print()}\ra custom print.\\
+\W \textbf{Without \cd{invisible(self)}, chaining FAILS!}\\
+\cd{clock1\$add\_hour()\$add\_hour()}\ra ERROR: ``\cd{\$} operator is\\
+invalid for atomic vectors'' (method returns \cd{NULL}, not \cd{self}).
+
+\sub{Inheritance \& Reference semantics}
+\cd{R6Class("Child", inherit=Parent)}. \cd{super\$method()} for parent.\\
+\cd{class(x)}\ra \cd{c("Child","Parent","R6")}.\\
+\cd{y <- x}\ra \textbf{SAME object}! \cd{y\$set(10)} changes x too!\\
+\cd{y <- x\$clone()}\ra independent. \cd{\$clone(deep=TRUE)}\ra deep copy.\\
+Functions can modify R6 args without assignment: \cd{f(x)} changes x!
+
+% ─────────────────────────────────────────────────
+\sect{corange}{DPLYR}
+% ─────────────────────────────────────────────────
+
+\cd{df <- data.frame(name=c("A","B","C","A"),}\\
+\cd{\ \ age=c(20,25,30,22), score=c(80,90,70,85))}
+
+\begin{tabular}{@{}l|l|l|l@{}}
+\rowcolor{cbg} & \cd{name} & \cd{age} & \cd{score}\\
+1 & \cd{A} & \cd{20} & \cd{80}\\
+\rowcolor{cbg!40}2 & \cd{B} & \cd{25} & \cd{90}\\
+3 & \cd{C} & \cd{30} & \cd{70}\\
+\rowcolor{cbg!40}4 & \cd{A} & \cd{22} & \cd{85}\\
+\end{tabular}
+
+\sub{select() --- choose columns}
+\cd{df |> select(name, age)}\ra keeps only name, age cols\\
+\cd{df |> select(-score)}\ra same (drop score)\\
+\cd{df |> select(n=name)}\ra renames name to n
+
+\sub{filter() --- keep rows}
+\cd{df |> filter(age > 22)}\ra rows 2,3 (B/25/90, C/30/70)\\
+\cd{df |> filter(name=="A", age>20)}\ra row 4 only (comma=AND)\\
+\W \cd{filter(df, name = "A")}\ra \textbf{error}! Use \cd{==} not \cd{=}.
+
+\sub{mutate() --- add/transform columns}
+\cd{df |> mutate(pass = score >= 80)}\ra adds col:
+
+\begin{tabular}{@{}l|l|l|l@{}}
+\rowcolor{cbg}\cd{name} & \cd{age} & \cd{score} & \cd{pass}\\
+\cd{A} & \cd{20} & \cd{80} & \cd{TRUE}\\
+\rowcolor{cbg!40}\cd{B} & \cd{25} & \cd{90} & \cd{TRUE}\\
+\cd{C} & \cd{30} & \cd{70} & \cd{FALSE}\\
+\rowcolor{cbg!40}\cd{A} & \cd{22} & \cd{85} & \cd{TRUE}\\
 \end{tabular}
 
 \vspace{1pt}
-\cd{parent.frame()}\ra calling env (dynamic scoping).\\
-\cd{get("y", envir=parent.frame())}\ra looks in calling env.
+Keeps all cols. \cd{transmute()}\ra only new cols.
 
-% ─────────────────────────────────────────────────
-\sect{cteal}{SUPER ASSIGNMENT \& SCOPING EXAMPLES}
-% ─────────────────────────────────────────────────
+\sub{arrange() --- sort rows}
+\cd{df |> arrange(age)}\ra 20, 22, 25, 30\\
+\cd{df |> arrange(desc(score))}\ra 90, 85, 80, 70
 
-\cd{<<-} \textbf{never} creates in current env; modifies in parent.\\
-Climbs scope; if not found, creates in global.\\
-\W \textbf{Stops at FIRST scope where variable exists!}
+\sub{group\_by + summarize}
+\cd{df |> group\_by(name) |>}\\
+\cd{\ \ summarize(avg=mean(score), n=n())}
 
-\sub{Ex1: Nested (lexical scoping)}
-\cd{x<-1; y<-1; z<-1}\\
-\cd{f<-function()\{y<-2; g<-function()\{z<-3; x+y+z\}; g()\}}\\
-\cd{f()}\ra \cd{6} ($x{=}1$ global, $y{=}2$ f, $z{=}3$ g). Global x,y,z still 1.
+\begin{tabular}{@{}l|l|l@{}}
+\rowcolor{cbg}\cd{name} & \cd{avg} & \cd{n}\\
+\cd{A} & \cd{82.5} & \cd{2}\\
+\rowcolor{cbg!40}\cd{B} & \cd{90} & \cd{1}\\
+\cd{C} & \cd{70} & \cd{1}\\
+\end{tabular}
 
-\sub{Ex2: Separate functions (KEY!)}
-\cd{y<-10; g<-function()\{y\}; h<-function()\{y<-100; g()\}}\\
-\cd{h()}\ra \cd{10} (g defined in global, finds global y=10).\\
-\W g() finds \textbf{global} y, NOT h()'s local y=100.
-
-\sub{Ex3: parent.frame()}
-\cd{g<-function()\{get("y",envir=parent.frame())\}}\\
-\cd{h<-function()\{y<-100; g()\}; h()}\ra \cd{100} (calling env).\\
-\cd{g()}\ra \cd{10} (calling env is global).
-
-\sub{Ex4: Super assignment}
-\cd{x<-1; y<-1; z<-1}\\
-\cd{f<-function()\{y<-2; y<<-4; g<-function()\{z<<-3; x+y+z\}; g()\}}\\
-\cd{f()}\ra \cd{6}. Global: $y{=}4$, $z{=}3$. \cd{y<-2} local, \cd{y<<-4} global.
-
-\sub{Ex5: <<- stops at first scope}
-\cd{f<-function()\{y<-2; z<-10; y<<-4; g<-function()\{z<<-3; x+y+z\}; g()\}}\\
-\cd{f()}\ra \cd{6}. Global $z{=}1$ unchanged! \cd{z<<-3} modifies f's z=10.
-
-\sub{Danger of <<-}
-\cd{foo\_bad<-function(foo,x)\{foo<<-c(foo,x\^{}2)\}; bar<-10; foo\_bad(bar,6)}\\
-\cd{<<-} targets name ``foo'', not passed variable. bar unchanged!
-
-% ─────────────────────────────────────────────────
-\sect{corange}{DPLYR CORE VERBS}
-% ─────────────────────────────────────────────────
-
-All: 1st arg = df, return new df. Pipe: \cd{|>} (``then'').
-
-\sub{select() --- choose columns}
-\cd{select(df, name, age)}, \cd{select(df, -col)}, \cd{select(df, a:d)}.\\
-Rename: \cd{select(df, new=old)}. Also: \cd{rename(df, new=old)}.\\
-Helpers: \cd{starts\_with()}, \cd{ends\_with()}, \cd{contains()}, \cd{matches()},
-\cd{everything()}, \cd{all\_of(v)}, \cd{any\_of(v)}, \cd{last\_col()}, \cd{where(is.numeric)}.
-
-\sub{filter() --- keep rows}
-\cd{filter(df, species == "Human")}. Comma = AND.\\
-\cd{filter(df, x \%in\% c("a","b"))} for multiple values.\\
-\W \cd{filter(df, species = "X")}\ra error (use \cd{==} not \cd{=}).\\
-\W \cd{species=="A"|"B"}\ra all TRUE (\cd{"B"}\ra\cd{TRUE}).
-
-\sub{mutate() --- add/transform columns}
-Keeps all cols. Can reference just-created cols in same call.\\
-\cd{.before = everything()} puts new cols first.\\
-\cd{transmute()}\ra like mutate but drops original cols.
+\vspace{1pt}
+\cd{n()}\ra count rows. \cd{n\_distinct(col)}\ra unique count.\\
+\cd{group\_by + mutate}\ra adds col within group.\\
+\cd{ungroup()} to remove grouping after.
 
 \sub{Other verbs}
-\cd{arrange(df, desc(col))}\ra sort. \cd{slice(df, 5:10)}.\\
-\cd{slice\_sample(n=5)}, \cd{slice\_max(col, n=3)}, \cd{slice\_min()}.\\
-\cd{distinct(df, col1, .keep\_all=TRUE)}\ra unique rows.\\
-\cd{pull(df, col)}\ra vector. \cd{relocate(df, col, .after=ref)}.\\
-\cd{count(df, col)}\ra shortcut for \cd{group\_by + summarize(n=n())}.\\
-\cd{if\_else(cond, T, F)}: strict types. \cd{case\_when(c\~{}v, TRUE\~{}d)}.
-
-\sub{Useful mutate functions}
-\cd{pmin()/pmax()}\ra row-wise min/max. \cd{coalesce()}\ra first non-NA.\\
-\cd{cumsum()}, \cd{cummean()}. \cd{lead(x,n)/lag(x,n)}\ra shift.\\
-\cd{between(x,a,b)}\ra $a \le x \le b$. \cd{ntile(x,n)}\ra n bins.\\
-\cd{n()}\ra rows in group. \cd{n\_distinct(x)}\ra unique count.\\
-\cd{row\_number()}, \cd{min\_rank()}, \cd{dense\_rank()}\ra ranking.
-
-% ─────────────────────────────────────────────────
-\sect{corange}{GROUP\_BY, SUMMARIZE, JOINS}
-% ─────────────────────────────────────────────────
-
-\cd{df |> summarize(m=mean(x, na.rm=T), cnt=n())}\\
-\cd{df |> group\_by(sp) |> summarize(m=mean(ht))}\ra one row/group.\\
-\cd{group\_by + mutate}\ra within-group (z-scores). \cd{ungroup()}.\\
-Multiple: \cd{group\_by(a,b)}. Each summarize peels one layer.
+\cd{df |> count(name)}\ra \cd{A:2, B:1, C:1}\\
+\cd{df |> distinct(name)}\ra \cd{A, B, C}\\
+\cd{df |> slice(1:2)}\ra first 2 rows\\
+\cd{df |> pull(age)}\ra \cd{c(20,25,30,22)} (vector!)
 
 \sub{Joins}
-\begin{tabular}{@{}l|p{10.5em}@{}}
-\rowcolor{cbg}\textbf{Join} & \textbf{Keeps}\\
-\cd{left\_join(x,y)} & All x rows, match from y\\
-\rowcolor{cbg!40}\cd{right\_join(x,y)} & All y rows, match from x\\
-\cd{inner\_join(x,y)} & Only matching (intersection)\\
-\rowcolor{cbg!40}\cd{full\_join(x,y)} & All rows from both (union)\\
-\cd{semi\_join(x,y)} & x rows w/ match, no cols added\\
-\rowcolor{cbg!40}\cd{anti\_join(x,y)} & x rows w/ \textbf{no} match\\
+\cd{x = data.frame(id=c(1,2,3), n=c("A","B","C"))}\\
+\cd{y = data.frame(id=c(2,3,4), s=c(90,80,70))}
+
+\begin{tabular}{@{}l|l@{}}
+\rowcolor{cbg}\textbf{Join} & \textbf{Result (id, n, s)}\\
+\cd{left\_join(x,y)} & \cd{1/A/NA, 2/B/90, 3/C/80}\\
+\rowcolor{cbg!40}\cd{right\_join(x,y)} & \cd{2/B/90, 3/C/80, 4/NA/70}\\
+\cd{inner\_join(x,y)} & \cd{2/B/90, 3/C/80}\\
+\rowcolor{cbg!40}\cd{full\_join(x,y)} & \cd{1/A/NA, 2/B/90, 3/C/80, 4/NA/70}\\
+\cd{semi\_join(x,y)} & \cd{2/B, 3/C} (no y cols added)\\
+\rowcolor{cbg!40}\cd{anti\_join(x,y)} & \cd{1/A} (x rows w/ \textbf{no} match)\\
 \end{tabular}
 
 \vspace{1pt}
@@ -612,44 +592,63 @@ Set ops: \cd{intersect()}, \cd{union()}, \cd{setdiff()} on rows.
 \sect{corange}{TIDYR: RESHAPING}
 % ─────────────────────────────────────────────────
 
-\cd{pivot\_longer(df, cols=c1:c3, names\_to="year", values\_to="n")}\\
-\cd{cols}: \cd{-country}, \cd{starts\_with("20")}, \cd{2:4}. Unpivoted cols duplicated.\\
-\cd{pivot\_wider(df, id\_cols=city, names\_from=sz, values\_from=amt)}\\
-\cd{values\_fill=0}. \W ``NYC'' vs ``New York''\ra separate rows!\\
-They are \textbf{inverse} operations. \cd{separate()}/\cd{unite()} for string cols.
+\noindent\includegraphics[width=\columnwidth]{pivot.png}
 
 % ─────────────────────────────────────────────────
 \sect{cpurple}{STRINGS \& REGEX}
 % ─────────────────────────────────────────────────
 
-\cd{paste("a",1:3,sep="")}\ra \cd{c("a1","a2","a3")}. \cd{paste0}=\cd{sep=""}.\\
-\cd{collapse=","}\ra \cd{"a1,a2,a3"} (single string).\\
-\cd{cat()}\ra prints w/o quotes, returns \cd{invisible(NULL)}.\\
-\cd{nchar("hi")}\ra 2. \cd{substr("hello",2,4)}\ra \cd{"ell"}.\\
-\cd{sprintf("\%d items at \$\%.2f", 3, 9.5)}\ra \cd{"3 items at \$9.50"}.
-
 \sub{stringr functions}
+\cd{s <- c("apple 3", "banana 12", "cherry")}
+
 \begin{tabular}{@{}l|l@{}}
-\rowcolor{cbg}\textbf{Function} & \textbf{Returns}\\
-\cd{str\_detect(s,p)} & logical vector\\
-\rowcolor{cbg!40}\cd{str\_extract(s,p)} & matched text or NA\\
-\cd{str\_match(s,p)} & matrix: full + groups\\
-\rowcolor{cbg!40}\cd{str\_replace(s,p,r)} & 1st match replaced\\
-\cd{str\_split(s,p)} & list of pieces\\
-\rowcolor{cbg!40}\cd{str\_count/locate/sub} & count / position / substring\\
+\rowcolor{cbg}\textbf{Function} & \textbf{Example \& Result}\\
+\cd{str\_detect(s,p)} & \cd{str\_detect(s,"\textbackslash\textbackslash d")}\ra \cd{T, T, F}\\
+\rowcolor{cbg!40}\cd{str\_extract(s,p)} & \cd{str\_extract(s,"\textbackslash\textbackslash d+")}\ra \cd{"3","12",NA}\\
+\cd{str\_match(s,p)} & \cd{str\_match(s,"(\textbackslash\textbackslash w+) (\textbackslash\textbackslash d+)")}\ra matrix\\
+ & col1=full, col2=\cd{"apple","banana",NA}\\
+\rowcolor{cbg!40}\cd{str\_replace(s,p,r)} & \cd{str\_replace(s,"a","X")}\ra \cd{"Xpple 3",...}\\
+\cd{str\_replace\_all} & \cd{str\_replace\_all(s,"a","X")}\ra \cd{"Xpple 3","bXnXnX 12",...}\\
+\rowcolor{cbg!40}\cd{str\_split(s,p)} & \cd{str\_split("a.b.c","\textbackslash\textbackslash.")}\ra \cd{list(c("a","b","c"))}\\
+\cd{str\_count(s,p)} & \cd{str\_count(s,"a")}\ra \cd{1, 3, 0}\\
 \end{tabular}
 
-\cd{\_all} suffix: ALL matches. \cd{str\_extract\_all}\ra \textbf{list}.
+\vspace{1pt}
+\cd{\_all} suffix: ALL matches. \cd{str\_extract\_all}\ra \textbf{list} (not vector!).
 
 \sub{Regex metacharacters (escape: \texttt{\textbackslash\textbackslash})}
-\cd{.}\ra any char. \cd{[\^{}aeiou]}\ra negation. \cd{\textbackslash\textbackslash d}/\cd{\textbackslash\textbackslash w}/\cd{\textbackslash\textbackslash s}\ra digit/word/space.\\
-\cd{\^{}}\ra start. \cd{\$}\ra end. \cd{\textbackslash\textbackslash b}\ra word boundary.\\
-Caret 3 meanings: \cd{\^{}[0-9]} start; \cd{[\^{}0-9]} negate; \cd{[0-9\^{}]} literal.\\
+\begin{tabular}{@{}l|l|l@{}}
+\rowcolor{cbg}\textbf{Symbol} & \textbf{Meaning} & \textbf{Example}\\
+\cd{.} & any single char & \cd{"h.t"}\ra \cd{"hat","hot"}\\
+\rowcolor{cbg!40}\cd{\^{}} & start of string & \cd{"\^{}Hi"}\ra \cd{"Hi there"}\\
+\cd{\$} & end of string & \cd{"end\$"}\ra \cd{"the end"}\\
+\rowcolor{cbg!40}\cd{\textbackslash\textbackslash d} & digit (0--9) & \cd{"\textbackslash\textbackslash d+"}\ra \cd{"123"}\\
+\cd{\textbackslash\textbackslash w} & word (a--z,0--9,\_) & \cd{"\textbackslash\textbackslash w+"}\ra \cd{"hi\_2"}\\
+\rowcolor{cbg!40}\cd{\textbackslash\textbackslash s} & whitespace & \cd{"\textbackslash\textbackslash s+"}\ra \cd{" "}\\
+\cd{\textbackslash\textbackslash b} & word boundary & \cd{"\textbackslash\textbackslash bcat\textbackslash\textbackslash b"} skips \cd{"catch"}\\
+\rowcolor{cbg!40}\cd{[\^{}...]} & negation in \cd{[]} & \cd{[\^{}aeiou]} = not vowel\\
+\end{tabular}
+
+\vspace{1pt}
+\sub{Caret \cd{\^{}} --- 3 meanings by position}
+\cd{"\^{}Hi"}\ra matches \cd{"Hi there"}, not \cd{"say Hi"} (start anchor)\\
+\cd{"[\^{}aeiou]"}\ra matches \cd{"b","c","d",...} (negation inside \cd{[]})\\
+\cd{"[abc\^{}]"}\ra matches \cd{a,b,c,\^{}} (literal when not first in \cd{[]})\\
 Inside \cd{[]}: most metachar literal. Exceptions: \cd{] - \^{} \textbackslash}.
 
 \sub{Quantifiers \& Greedy/Lazy}
-\cd{*} 0+, \cd{+} 1+, \cd{?} 0/1, \cd{\{n\}}, \cd{\{n,\}}, \cd{\{n,m\}}.\\
-\textbf{Greedy} (default): longest. Add \cd{?} for \textbf{lazy} (shortest).\\
+\begin{tabular}{@{}l|l|l@{}}
+\rowcolor{cbg}\textbf{Quant.} & \textbf{Meaning} & \textbf{Example}\\
+\cd{*} & 0 or more & \cd{"ab*"}\ra \cd{"a","ab","abbb"}\\
+\rowcolor{cbg!40}\cd{+} & 1 or more & \cd{"ab+"}\ra \cd{"ab","abbb"}\\
+\cd{?} & 0 or 1 (optional) & \cd{"ab?"}\ra \cd{"a"} or \cd{"ab"}\\
+\rowcolor{cbg!40}\cd{\{n\}} & exactly n & \cd{"b\{2\}"}\ra \cd{"bb"}\\
+\cd{\{n,\}} & n or more & \cd{"b\{2,\}"}\ra \cd{"bb","bbb"}\\
+\rowcolor{cbg!40}\cd{\{n,m\}} & between n and m & \cd{"b\{1,2\}"}\ra \cd{"b","bb"}\\
+\end{tabular}
+
+\vspace{1pt}
+\textbf{Greedy} (default): longest match. Add \cd{?} after for \textbf{lazy} (shortest).\\
 \cd{str\_extract("Peter Piper","P.*r")}\ra \cd{"Peter Piper"} (greedy).\\
 \cd{str\_extract("Peter Piper","P.*?r")}\ra \cd{"Peter"} (lazy).
 
@@ -665,140 +664,54 @@ Inside \cd{[]}: most metachar literal. Exceptions: \cd{] - \^{} \textbackslash}.
 Lookbehind: \textbf{bounded length only} (no \cd{*}/\cd{+}).
 
 % ─────────────────────────────────────────────────
-\sect{cred}{S3 OOP}
+\sect{cred}{WHEN DOES R OUTPUT NA / NaN / NULL / Inf?}
 % ─────────────────────────────────────────────────
 
-\textbf{Generic function OOP}: methods belong to \textbf{functions}.\\
-Generic calls \cd{UseMethod("name")}. Methods: \cd{generic.class()}.\\
-Create: \cd{structure(list(), class="fruit")} or \cd{class(y)<-"fruit"}.\\
-No formal definition; just set class attr. Class can be vector.\\
-\W Use \cd{inherits(x,"fruit")} not \cd{class(x)=="fruit"}.
-
-\sub{Dispatch order}
-\cd{UseMethod}: \cd{gen.class1}\ra\cd{gen.class2}\ra...\ra\cd{gen.default}.\\
-No match + no default\ra ERROR. Direct \cd{f.j(x)} bypasses dispatch.\\
-\cd{class(k)<-NULL}\ra implicit class (double/numeric then default).
-
-\sub{Dispatch examples}
-\cd{f<-function(x) UseMethod("f"); f.j<-function(x) x+2; f.k<-function(x) x+10}\\
-\cd{k<-1; f(k)}\ra \textbf{ERROR} (no f.double/f.numeric/f.default).\\
-\cd{class(k)<-"j"; f(k)}\ra 3. Add \cd{f.default<-function(x) x+100}.\\
-\cd{structure(10,class=c("k","l"))}\ra f.k first. \cd{c("m","n")}\ra f.default.\\
-\cd{f(7)}\ra 107 (double). \cd{f.j(7)}\ra 9 (direct, bypasses dispatch).\\
-\W \cd{7} is double; \cd{7L} is integer! \cd{f.integer<-function(x) 100*x}\\
-\cd{f(7)}\ra 107 (double!). \cd{f(7L)}\ra 700 (integer!).
-
-\sub{UseMethod mismatch}
-\cd{f<-function(x) UseMethod("g")}\ra dispatches \cd{g.class} not \cd{f.class}!
-
-% ─────────────────────────────────────────────────
-\sect{cred}{R6 OOP}
-% ─────────────────────────────────────────────────
-
-\textbf{Encapsulated OOP}: methods belong to \textbf{objects}. \cd{library(R6)}.\\
-\cd{Cls <- R6Class("Cls", public=list(val=0, set=function(x)\{}\\
-\cd{\ \ self\$val<-x; invisible(self)\}))}. Instance: \cd{x <- Cls\$new()}.\\
-\cd{self\$}\ra own fields. \cd{invisible(self)}\ra method chaining.\\
-\cd{\$initialize()}\ra overrides \cd{\$new()}. \cd{\$print()}\ra custom print.\\
-Methods bound at creation; redefining class won't update old objects.\\
-\cd{\$set("public","field",val)}\ra add after creation (new objs only).
-
-\sub{Inheritance \& Reference semantics}
-\cd{R6Class("Child", inherit=Parent)}. \cd{super\$method()} for parent.\\
-\cd{class(x)}\ra \cd{c("Child","Parent","R6")}.\\
-\cd{y <- x}\ra \textbf{SAME object}! \cd{y\$set(10)} changes x too!\\
-\cd{y <- x\$clone()}\ra independent. \cd{\$clone(deep=TRUE)}\ra deep copy.\\
-Functions can modify R6 args without assignment: \cd{f(x)} changes x!
-
-% ─────────────────────────────────────────────────
-\sect{cred}{COMMON TRAPS --- QUICK REFERENCE}
-% ─────────────────────────────────────────────────
-
+\sub{NA --- ``I don't know''}
 \begin{tabular}{@{}l|l@{}}
-\rowcolor{cbg}\textbf{Trap} & \textbf{Reality}\\
-\cd{typeof(df)} & \cd{"list"} not \cd{"data.frame"}\\
-\rowcolor{cbg!40}\cd{typeof(factor)} & \cd{"integer"} not \cd{"factor"}\\
-\cd{7} vs \cd{7L} & double vs integer (S3 dispatch!)\\
-\rowcolor{cbg!40}\cd{1:0} & \cd{c(1,0)} not empty! Use \cd{seq\_len}\\
-\cd{c(1,NULL,3)} & \cd{c(1,3)} (NULL dropped)\\
-\rowcolor{cbg!40}\cd{NA == NA} & \cd{NA} (use \cd{is.na()})\\
-\cd{NA * 0} & \cd{NA} (not 0!)\\
-\rowcolor{cbg!40}Matrix fill & Column-wise (not row-wise)\\
-\cd{as.numeric(factor)} & Gives indices, not values\\
-\rowcolor{cbg!40}\cd{x[2.9]} & Same as \cd{x[2]} (truncated)\\
-\cd{<<-} & Stops at first scope w/ var\\
-\rowcolor{cbg!40}R6 \cd{y<-x} & Shared ref (use \cd{\$clone()})\\
-Greedy regex & Longest; \cd{?} for shortest\\
-\rowcolor{cbg!40}\cd{[} on list & Always returns list\\
-\cd{if(vec)} & ERROR if length$>$1\\
-\rowcolor{cbg!40}\cd{f.j(7)} & Bypasses S3 dispatch\\
-\cd{UseMethod("g")} & Dispatches \cd{g.class} not \cd{f.class}\\
-\rowcolor{cbg!40}\cd{df[1:13]} no comma & Selects columns, not rows!\\
-\cd{as.logical("t"/"1")} & \cd{NA} (only full words)\\
-\rowcolor{cbg!40}\cd{as.logical(c("0",1))} & All \cd{NA} (char coercion first)\\
-\cd{factor} bad assign & \cd{NA} with warning\\
-\rowcolor{cbg!40}\cd{"10" < "2"} & \cd{TRUE} (alphabetical!)\\
-\cd{any(logical(0))} & \cd{FALSE}\\
-\rowcolor{cbg!40}\cd{all(logical(0))} & \cd{TRUE}\\
-\cd{(Mr|Mrs)} & \cd{"Mr"} first wins on ``Mrs''\\
-\rowcolor{cbg!40}\cd{round(2.5)} & \cd{2} (banker's rounding)\\
-\cd{is.numeric(1L)} & \cd{TRUE} (int IS numeric)\\
-\rowcolor{cbg!40}\cd{identical(1, 1L)} & \cd{FALSE} (type matters)\\
-\cd{sapply} empty & Returns \cd{list()} not vector\\
-\rowcolor{cbg!40}\cd{l\$na} & Partial match\ra wrong result\\
-\cd{f(x=3)} vs \cd{f(x<-3)} & \cd{=} arg only; \cd{<-} also assigns\\
-\rowcolor{cbg!40}\cd{Inf - Inf} & \cd{NaN} (not 0)\\
-\cd{(-7) \%\% 3} & \cd{2} (R modulo always $\ge 0$)\\
-\rowcolor{cbg!40}\cd{nchar(NA)} & \cd{NA} (not 2!)\\
-\cd{NULL + 1} & \cd{numeric(0)} (not error)\\
-\cd{log(0)} & \cd{-Inf} (not error)\\
-\rowcolor{cbg!40}\cd{Inf * 0} & \cd{NaN} (not 0)\\
-\cd{is.na(NaN)} & \cd{TRUE} (NaN is NA!)\\
-\rowcolor{cbg!40}\cd{NULL == NULL} & \cd{logical(0)} (not TRUE)\\
-\cd{e\$d <- NULL} in env & Does NOT remove d\\
-\rowcolor{cbg!40}\cd{for(i in 1:0)} & Loops \textbf{twice} (1,0)\\
+\rowcolor{cbg}\textbf{Situation} & \textbf{Example}\\
+Any math with NA & \cd{NA + 1}\ra\cd{NA}, \cd{NA * 0}\ra\cd{NA}\\
+\rowcolor{cbg!40}Comparison with NA & \cd{NA == NA}\ra\cd{NA}, \cd{NA > 5}\ra\cd{NA}\\
+Logic (undetermined) & \cd{NA \& TRUE}\ra\cd{NA}, \cd{NA | FALSE}\ra\cd{NA}\\
+\rowcolor{cbg!40}OOB with \cd{[} & \cd{x[10]} on length-3\ra\cd{NA}\\
+No match & \cd{match(5, c(1,2))}\ra\cd{NA}\\
+\rowcolor{cbg!40}Coercion failure & \cd{as.numeric("dog")}\ra\cd{NA}\\
+Bad factor level & assign value not in levels\ra\cd{NA}\\
+\end{tabular}
+
+\sub{NaN --- ``Undefined math'' (is also NA!)}
+\begin{tabular}{@{}l|l@{}}
+\rowcolor{cbg}\textbf{Situation} & \textbf{Example}\\
+0 divided by 0 & \cd{0/0}\ra\cd{NaN}\\
+\rowcolor{cbg!40}Inf minus Inf & \cd{Inf - Inf}\ra\cd{NaN}\\
+Inf times 0 & \cd{Inf * 0}\ra\cd{NaN}\\
+\rowcolor{cbg!40}Negative sqrt/log & \cd{sqrt(-1)}\ra\cd{NaN}, \cd{log(-1)}\ra\cd{NaN}\\
+\end{tabular}
+
+\vspace{1pt}
+\cd{is.na(NaN)}\ra\cd{TRUE} (NaN is a kind of NA). \cd{is.nan(NA)}\ra\cd{FALSE}.
+
+\sub{NULL --- ``Nothing exists''}
+\begin{tabular}{@{}l|l@{}}
+\rowcolor{cbg}\textbf{Situation} & \textbf{Example}\\
+Nonexistent list element & \cd{list()\$x}\ra\cd{NULL}\\
+\rowcolor{cbg!40}Dropped in \cd{c()} & \cd{c(1, NULL, 3)}\ra\cd{c(1, 3)}\\
+NULL in math & \cd{NULL + 1}\ra\cd{numeric(0)}\\
+\rowcolor{cbg!40}Length is 0 & \cd{length(NULL)}\ra\cd{0}\\
+\end{tabular}
+
+\sub{Inf --- ``Infinity''}
+\begin{tabular}{@{}l|l@{}}
+\rowcolor{cbg}\textbf{Situation} & \textbf{Example}\\
+Divide by zero & \cd{1/0}\ra\cd{Inf}, \cd{-1/0}\ra\cd{-Inf}\\
+\rowcolor{cbg!40}Log of zero & \cd{log(0)}\ra\cd{-Inf}\\
+Inf in math & \cd{Inf + 1}\ra\cd{Inf}\\
 \end{tabular}
 
 \vspace{2pt}
-\sect{cred}{ERROR HANDLING}
+\sub{Quick contrast}
+\cd{0/0}\ra\cd{NaN}. \cd{1/0}\ra\cd{Inf}. \cd{NA+1}\ra\cd{NA}. \cd{NULL+1}\ra\cd{numeric(0)}.
 
-\cd{stop("msg")}\ra raises error. \cd{warning("msg")}\ra warning.\\
-\cd{message("msg")}\ra message (to stderr).\\
-\cd{tryCatch(expr, error=function(e) ..., warning=function(w) ...)}.\\
-\cd{try(expr)}\ra returns result or \cd{try-error} object (no stop).\\
-\cd{stopifnot(x > 0)}\ra stops if condition FALSE.\\
-\cd{suppressWarnings(expr)}, \cd{suppressMessages(expr)}.
-
-\vspace{2pt}
-\sect{cred}{MISC R TRICKS}
-
-\cd{switch(x, "a"=1, "b"=2, 3)}\ra match x; last = default.\\
-\cd{Sys.time()}\ra current datetime. \cd{proc.time()}\ra CPU time.\\
-\cd{system.time(expr)}\ra time an expression.\\
-\cd{sample(1:10, 5)}\ra 5 random from 1:10 (no replace).\\
-\cd{sample(1:10, 5, replace=TRUE)}\ra with replacement.\\
-\cd{set.seed(42)}\ra reproducible randomness.\\
-\cd{print(x)} returns x invisibly. \cd{cat()} returns \cd{invisible(NULL)}.\\
-\cd{invisible(x)}\ra return x without printing.\\
-\cd{exists("x")}\ra TRUE if x exists in scope.\\
-\cd{get("x")}\ra get value by name string. \cd{assign("x", 5)}\ra set.\\
-\cd{nargs()}\ra number of args passed to current function.\\
-\cd{missing(x)}\ra TRUE if arg x was not supplied.\\
-\cd{is.function(mean)}\ra TRUE. \cd{is.primitive(sum)}\ra TRUE.\\
-\cd{environment(f)}\ra enclosing env of f. \cd{body(f)}\ra function body.\\
-\cd{formals(f)}\ra list of formal arguments with defaults.\\
-\cd{methods("print")}\ra all print methods. \cd{methods(class="factor")}.\\
-\cd{paste(1:3, collapse="+")}\ra \cd{"1+2+3"}.\\
-\cd{strsplit("a.b.c", "\\\\.")}\ra \cd{list(c("a","b","c"))}.\\
-\cd{gsub("old","new",x)}\ra replace all in base R.\\
-\cd{sub("old","new",x)}\ra replace first in base R.\\
-\cd{grepl("pattern",x)}\ra logical (base R \cd{str\_detect}).\\
-\cd{grep("pattern",x)}\ra indices of matches.\\
-\cd{regmatches(x, regexpr(p, x))}\ra base R extract.\\
-\cd{trimws(" hi ")}\ra \cd{"hi"} (trim whitespace).\\
-\cd{startsWith("abc","ab")}\ra TRUE. \cd{endsWith("abc","bc")}\ra TRUE.\\
-\cd{sprintf("\%05d", 42)}\ra \cd{"00042"} (zero-padded).\\
-\cd{sprintf("\%.1e", 1234)}\ra \cd{"1.2e+03"} (scientific).
 
 \end{multicols}
 \end{document}
